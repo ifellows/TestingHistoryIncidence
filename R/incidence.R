@@ -20,6 +20,17 @@
 #' Subjects in the first bin would have a last_hiv_test value of 0, those in the second would have 6,
 #' the third would have 12 and the last would have 24. Those with missing data or who never had an hiv test
 #' should be assigned NA.
+#' @return A list with elements:
+#' 'inc': the estimated incidence.
+#' 'pundiag': The estimated proportion of positive cases that are undiagnosed.
+#' 'psay_undiag': The proportion of positive cases that report being undiagnosed.
+#' 'pmiss_class': the proportion whose diagnosis status is incorrectly reported by the individual .
+#' 'phiv': The proportion with a positive diagnosis.
+#' 'ptester': The proportion who have ever been tested.
+#' 'mean_time_since_last_test': the mean tie since last test in years.
+#' 'tid': mean time between infection and diagnosis.
+#' 'ptruth' the proportion of positive individuals that correctly report their status.
+#' 'ptreated': the proportion of positive indivudals who are identified as treated by viral load or biomarker.
 #' @export
 testing_incidence <- function(report_hiv_pos, biomarker_art, low_viral, hiv,
                               last_hiv_test, ever_hiv_test,
@@ -29,7 +40,6 @@ testing_incidence <- function(report_hiv_pos, biomarker_art, low_viral, hiv,
   treated <- low_viral | biomarker_art
   treated[is.na(treated)] <- FALSE
 
-  #undiag <- !report_hiv_pos & !treated
 
   tab <- wtd.table(!report_hiv_pos, hiv, weights=weights)
 
@@ -39,8 +49,6 @@ testing_incidence <- function(report_hiv_pos, biomarker_art, low_viral, hiv,
   ln_sub <- !hiv & !is.na(hiv) & !is.na(last_hiv_test) & !is.na(weights)
   last_neg <- last_hiv_test[ln_sub]
   ln_wts <- weights[ln_sub]
-  #last_neg <- c(last_neg, rep(max(last_neg), sum(!ever_hiv_test[!hiv],na.rm = TRUE)))
-  #ln_wts <- c(ln_wts, na.omit(weights[!ever_hiv_test & !hiv]))
   rate <- 1/14.03188
   tln <- wtd.table(last_neg, weights = ln_wts)
   t <- as.numeric(names(tln))
@@ -58,11 +66,6 @@ testing_incidence <- function(report_hiv_pos, biomarker_art, low_viral, hiv,
     }
     result <- result - tln[n] * log(1 - p(t[n]))
     result
-    #-(tln[1] * log(p(t[2]) - p(t[1])) +
-    #    tln[2] * log(p(t[3]) - p(t[2])) +
-    #    tln[3] * log(p(t[4]) - p(t[3])) +
-    #    tln[4] * log(p(t[5]) - p(t[4])) +
-    #    tln[5] * log(1 - p(t[5])))
   }
   opt <- optim(function(x)lik2(x[1],x[2]),par = c(1/rate,1))
   opt
