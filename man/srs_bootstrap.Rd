@@ -14,10 +14,11 @@ srs_bootstrap(dat, fun, replicates = 1000)
 \item{replicates}{the number of replicates}
 }
 \value{
-a list containing
+a list with class boot_est containing
 'value': the value of the function applied to dat.
 'var': the boostrap variance.
 'replicates': The bootstrap values of fun.
+'nrep': the number of replicates.
 }
 \description{
 Performs a bootstrap assuming a simple random sample

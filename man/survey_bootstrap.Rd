@@ -14,7 +14,7 @@ survey_bootstrap(design, fun, ...)
 \item{...}{additional parameters passed to as.srvrepdesign}
 }
 \value{
-a list containing
+a list with class boot_est containing
 'value': the value of the function applied to dat.
 'var': the boostrap variance.
 'replicates': The bootstrap values of fun.

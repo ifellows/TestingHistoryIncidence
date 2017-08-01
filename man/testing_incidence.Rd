@@ -4,10 +4,10 @@
 \alias{testing_incidence}
 \title{Incindence from testing history}
 \usage{
-testing_incidence(report_hiv_pos, biomarker_art, low_viral, hiv, last_hiv_test,
-  ever_hiv_test, weights = rep(1,
+testing_incidence(report_hiv_pos, biomarker_art, low_viral, hiv, last_hiv_lower,
+  last_hiv_upper, ever_hiv_test, weights = rep(1,
   length(report_hiv_pos))/length(report_hiv_pos), distribution = "weibull",
-  ptruth = NULL, ptreated = NULL)
+  ptruth = NULL, ptreated = NULL, non_tester_tid = 123.824)
 }
 \arguments{
 \item{report_hiv_pos}{A logical vector indicating whether each subject reported a positive hiv status}
@@ -18,7 +18,9 @@ testing_incidence(report_hiv_pos, biomarker_art, low_viral, hiv, last_hiv_test,
 
 \item{hiv}{A logical vector indicating hiv status}
 
-\item{last_hiv_test}{A numeric vector indicating the lower bound of the time since last hiv test bin in months. See details.}
+\item{last_hiv_lower}{A numeric vector indicating the lower bound of the months since last hiv test bin in months.}
+
+\item{last_hiv_upper}{A numeric vector indicating the upper bound of the months since last hiv test bin in months.}
 
 \item{ever_hiv_test}{A logical vector indicating whether the subject had eer had an hiv test.}
 
@@ -32,15 +34,27 @@ If NULL, this is estimated using biomarker_art and low_viral.}
 
 \item{ptreated}{The proportion of hiv positive individuals with postive biomarker_art or low_viral.
 If NULL, this is estimated from the data.}
+
+\item{non_tester_tid}{mean nummber of months between infection and diagnosis for non_testers.}
+}
+\value{
+A data.frame of class test_inc with elements:
+'inc': the estimated incidence.
+'pundiag': The estimated proportion of positive cases that are undiagnosed.
+'psay_undiag': The proportion of positive cases that report being undiagnosed.
+'pmiss_class': the proportion whose diagnosis status is incorrectly reported by the individual .
+'phiv': The proportion with a positive diagnosis.
+'ptester': The proportion who have ever been tested.
+'mean_time_since_last_test': the mean tie since last test in years.
+'tid': mean time between infection and diagnosis in years.
+'ptruth' the proportion of positive individuals that correctly report their status.
+'ptreated': the proportion of positive indivudals who are identified as treated by viral load or biomarker.
 }
 \description{
 Incindence from testing history
 }
 \details{
-last_hiv_test assumes that last hiv test information is captured in bins,
-for example 0-6 month ago, 6-12 months ago, 12-24 month ago, and 24 or greater months ago.
-Subjects in the first bin would have a last_hiv_test value of 0, those in the second would have 6,
-the third would have 12 and the last would have 24. Those with missing data or who never had an hiv test
-should be assigned NA.
+last_hiv_upper should always be greater than last_hiv_lower, and may be infinite (e.g. test was  > 24 months ago). Those with missing data or who never had an hiv test
+should be assigned NA for both their lower and upper bound.
 }
 
